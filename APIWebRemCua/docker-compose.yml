@@ -1,0 +1,16 @@
+version: '3'
+services:
+  springboot-app:
+    image: springboot-app
+    restart: always
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      MYSQL_HOST: mysqldb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 123456
+      MYSQL_PORT: 3306
+
+
+
