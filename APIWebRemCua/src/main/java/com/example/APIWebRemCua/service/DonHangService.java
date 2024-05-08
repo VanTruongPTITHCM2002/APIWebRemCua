@@ -1,14 +1,17 @@
 package com.example.APIWebRemCua.service;
 
-import com.example.APIWebRemCua.entity.DonHang;
-import java.util.List;
+import com.example.APIWebRemCua.dto.DonHangDTO;
+
+import org.springframework.http.ResponseEntity;
+
+
 
 
 public interface DonHangService {
-    List<DonHang> getListDonHang();
-    DonHang addDonHang(DonHang donhang);
-    DonHang getDonHangById(int id);
+    ResponseEntity<?> getListDonHang();
+    ResponseEntity<?> addDonHang(DonHangDTO donHangDTO);
+    ResponseEntity<?> getDonHangById(int id);
 
-    DonHang updateDonHang(DonHang donhang);
-    void deleteDonHangById(int id);
+    ResponseEntity<?> updateDonHang(int id,DonHangDTO donHangDTO);
+    ResponseEntity<?> deleteDonHangById(int id);
 }
