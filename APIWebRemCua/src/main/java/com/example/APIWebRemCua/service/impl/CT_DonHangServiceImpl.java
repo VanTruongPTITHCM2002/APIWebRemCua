@@ -122,6 +122,26 @@ public class CT_DonHangServiceImpl implements CT_DonHangService {
 
         List<CT_DonHang> ct_donHangList = ct_donHangRepository.findAll().stream().filter(o->o.getDonHang().getId() == ct_donHangDTO.getIddonhang()).collect(Collectors.toList());
         CT_DonHang ct_donHang1 = ct_donHangList.stream().filter(o -> o.getIdrem() == id).findFirst().orElse(null);
+        RestTemplate restTemplate = new RestTemplate();
+        String flaskUrl = "http://127.0.0.1:7777/product_update_sl";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        Map<String, Object> requestData = new LinkedHashMap<>();
+        if(ct_donHang1.getSoluong() > ct_donHangDTO.getSoluong()){
+            // Tạo một Map để đại diện cho dữ liệu cần gửi
+
+            requestData.put("id",ct_donHang1.getIdrem());
+            requestData.put("method","add");
+            requestData.put("sl", ct_donHang1.getSoluong() - ct_donHangDTO.getSoluong());
+        }else{
+            requestData.put("id",ct_donHang1.getIdrem());
+            requestData.put("method","subtract");
+            requestData.put("sl",ct_donHangDTO.getSoluong());
+        }
+
+        // Gửi yêu cầu PUT với dữ liệu là một Map
+        HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(requestData, headers);
+        restTemplate.put(flaskUrl,httpEntity,String.class);
         ct_donHang1.setIdrem(ct_donHangDTO.getIdrem());
         ct_donHang1.setGia(ct_donHangDTO.getGia());
         ct_donHang1.setSoluong(ct_donHangDTO.getSoluong());
