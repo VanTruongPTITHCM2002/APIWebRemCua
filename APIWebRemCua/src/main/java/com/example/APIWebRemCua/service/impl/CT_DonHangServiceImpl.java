@@ -85,8 +85,12 @@ public class CT_DonHangServiceImpl implements CT_DonHangService {
     }
 
     @Override
-    public void deleteCT_DonHang(List<CT_DonHang>ct_donHangList,int id,DonHang donHang) {
-        for(CT_DonHang ct_donHang: ct_donHangList){
+    public ResponseEntity<?> deleteCT_DonHang(int orderId, int id) {
+        DonHang donHang = donHangRepository.findById(orderId).orElse(null);
+        if(donHang.getTrangThai().getId() != 3){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponeObj(HttpStatus.BAD_REQUEST.value(),"Không thể xóa chi tiết của đơn hàng này","" ));
+        }
+        for(CT_DonHang ct_donHang: donHang.getCt_donHangList()){
             if(ct_donHang.getIdrem() == id){
                 donHang.setThanhtien(donHang.getThanhtien() - (ct_donHang.getSoluong() * ct_donHang.getGia()));
                 RestTemplate restTemplate = new RestTemplate();
@@ -103,13 +107,30 @@ public class CT_DonHangServiceImpl implements CT_DonHangService {
                 HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(requestData, headers);
                 restTemplate.put(flaskUrl,httpEntity,String.class);
                 ct_donHangRepository.delete(ct_donHang);
-                break;
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponeObj(HttpStatus.OK.value(), "Xóa thành công",""));
             }
         }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponeObj(HttpStatus.NOT_FOUND.value(), "Không tìm thấy hàng",""));
     }
 
     @Override
-    public CT_DonHang updateCT_DonHang(CT_DonHang ct_donHang) {
-            return ct_donHangRepository.save(ct_donHang);
+    public ResponseEntity<?> updateCT_DonHang(int id, CT_DonHangDTO ct_donHangDTO) {
+        DonHang dh = donHangRepository.findById(ct_donHangDTO.getIddonhang()).orElse(null);
+        if(dh.getTrangThai().getId() != 3){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponeObj(HttpStatus.BAD_REQUEST.value(), "Không thể sửa chi tiết của đơn hàng này",""));
+        }
+
+        List<CT_DonHang> ct_donHangList = ct_donHangRepository.findAll().stream().filter(o->o.getDonHang().getId() == ct_donHangDTO.getIddonhang()).collect(Collectors.toList());
+        CT_DonHang ct_donHang1 = ct_donHangList.stream().filter(o -> o.getIdrem() == id).findFirst().orElse(null);
+        ct_donHang1.setIdrem(ct_donHangDTO.getIdrem());
+        ct_donHang1.setGia(ct_donHangDTO.getGia());
+        ct_donHang1.setSoluong(ct_donHangDTO.getSoluong());
+        ct_donHangRepository.save(ct_donHang1);
+        float billdetail = ct_donHangDTO.getGia() * ct_donHangDTO.getSoluong();
+        float billdetail2 = ct_donHang1.getGia() * ct_donHang1.getSoluong();
+        dh.setThanhtien(billdetail < billdetail2 ? dh.getThanhtien() -(billdetail2 - billdetail):
+                dh.getThanhtien() + (billdetail - billdetail2));
+        donHangRepository.save(dh);
+        return  ResponseEntity.ok().body(new ResponeObj(HttpStatus.OK.value(),"Sửa thành công chi tiết đơn hàng",ct_donHangDTO));
     }
 }
