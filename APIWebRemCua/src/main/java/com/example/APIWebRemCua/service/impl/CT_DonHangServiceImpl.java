@@ -114,13 +114,13 @@ public class CT_DonHangServiceImpl implements CT_DonHangService {
     }
 
     @Override
-    public ResponseEntity<?> updateCT_DonHang(int id, CT_DonHangDTO ct_donHangDTO) {
-        DonHang dh = donHangRepository.findById(ct_donHangDTO.getIddonhang()).orElse(null);
+    public ResponseEntity<?> updateCT_DonHang(int orderId,int id, CT_DonHangDTO ct_donHangDTO) {
+        DonHang dh = donHangRepository.findById(orderId).orElse(null);
         if(dh.getTrangThai().getId() != 3){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponeObj(HttpStatus.BAD_REQUEST.value(), "Không thể sửa chi tiết của đơn hàng này",""));
         }
 
-        List<CT_DonHang> ct_donHangList = ct_donHangRepository.findAll().stream().filter(o->o.getDonHang().getId() == ct_donHangDTO.getIddonhang()).collect(Collectors.toList());
+        List<CT_DonHang> ct_donHangList = ct_donHangRepository.findAll().stream().filter(o->o.getDonHang().getId() == orderId).collect(Collectors.toList());
         CT_DonHang ct_donHang1 = ct_donHangList.stream().filter(o -> o.getIdrem() == id).findFirst().orElse(null);
         RestTemplate restTemplate = new RestTemplate();
         String flaskUrl = "http://127.0.0.1:7777/product_update_sl";
@@ -130,27 +130,29 @@ public class CT_DonHangServiceImpl implements CT_DonHangService {
         if(ct_donHang1.getSoluong() > ct_donHangDTO.getSoluong()){
             // Tạo một Map để đại diện cho dữ liệu cần gửi
 
-            requestData.put("id",ct_donHang1.getIdrem());
+            requestData.put("id",id);
             requestData.put("method","add");
             requestData.put("sl", ct_donHang1.getSoluong() - ct_donHangDTO.getSoluong());
         }else{
-            requestData.put("id",ct_donHang1.getIdrem());
+            requestData.put("id",id);
             requestData.put("method","subtract");
-            requestData.put("sl",ct_donHangDTO.getSoluong());
+            requestData.put("sl",ct_donHangDTO.getSoluong() - ct_donHang1.getSoluong());
         }
-
+        float billdetail2 = ct_donHang1.getGia() * ct_donHang1.getSoluong();
         // Gửi yêu cầu PUT với dữ liệu là một Map
         HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(requestData, headers);
         restTemplate.put(flaskUrl,httpEntity,String.class);
-        ct_donHang1.setIdrem(ct_donHangDTO.getIdrem());
+        ct_donHang1.setIdrem(id);
+        ct_donHang1.setDonHang(dh);
         ct_donHang1.setGia(ct_donHangDTO.getGia());
         ct_donHang1.setSoluong(ct_donHangDTO.getSoluong());
         ct_donHangRepository.save(ct_donHang1);
         float billdetail = ct_donHangDTO.getGia() * ct_donHangDTO.getSoluong();
-        float billdetail2 = ct_donHang1.getGia() * ct_donHang1.getSoluong();
-        dh.setThanhtien(billdetail < billdetail2 ? dh.getThanhtien() -(billdetail2 - billdetail):
-                dh.getThanhtien() + (billdetail - billdetail2));
+
+        dh.setThanhtien(billdetail);
         donHangRepository.save(dh);
+        ct_donHangDTO.setIddonhang(orderId);
+        ct_donHangDTO.setIdrem(id);
         return  ResponseEntity.ok().body(new ResponeObj(HttpStatus.OK.value(),"Sửa thành công chi tiết đơn hàng",ct_donHangDTO));
     }
 }

@@ -41,8 +41,8 @@ public class CT_DonHangController {
         return ct_donHangService.insertCT_DonHang(id,ct_donHangDTO);
     }
     @PutMapping("orders/{orderId}/order/detail_order/{id}")
-    public ResponseEntity<?> updateCT_DonHang(@PathVariable("id") Integer id, @RequestBody CT_DonHangDTO ct_donHangDTO){
-        return ct_donHangService.updateCT_DonHang(id,ct_donHangDTO);
+    public ResponseEntity<?> updateCT_DonHang(@PathVariable("orderId") Integer orderId,@PathVariable("id") Integer id, @RequestBody CT_DonHangDTO ct_donHangDTO){
+        return ct_donHangService.updateCT_DonHang(orderId,id,ct_donHangDTO);
     }
 
     @DeleteMapping("orders/{orderId}/order/detail_order/{idrem}")
