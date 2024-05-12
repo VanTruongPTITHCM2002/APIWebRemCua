@@ -99,7 +99,7 @@ public class DonHangServiceImpl implements DonHangService {
             dh.setSdt(donHangDTO.getSdt());
             dh.setEmail(donHangDTO.getEmail());
             dh.setThanhtien(donHangDTO.getThanhtien());
-            if (donHangDTO.getTrangThai() == 1) {
+            if (donHangDTO.getTrangThai() == 1 || donHangDTO.getTrangThai() == 2) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponeObj(HttpStatus.BAD_REQUEST.value(), "Vui lòng sửa đúng trạng thái", ""));
             }
             if (donHangDTO.getTrangThai() == 0 && dh.getCt_donHangList().size() == 0) {
