@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface CT_DonHangService {
     ResponseEntity<?> getCT_DonHang(int id);
-    ResponseEntity<?> insertCT_DonHang(int id, CT_DonHangDTO ct_donHangDTO);
+    ResponseEntity<?> insertCT_DonHang(DonHang donHang, List<CT_DonHangDTO> listct_donHangDTO);
     ResponseEntity<?> deleteCT_DonHang(int orderId, int id);
     ResponseEntity<?> updateCT_DonHang(int orderId,int id, CT_DonHangDTO ct_donHangDTO);
 }

@@ -37,8 +37,8 @@ public class CT_DonHangController {
     }
 
     @PostMapping("orders/{id}/order/detail_order")
-    public ResponseEntity<?> addCT_DonHang(@PathVariable int id,@RequestBody CT_DonHangDTO ct_donHangDTO) throws JsonProcessingException {
-        return ct_donHangService.insertCT_DonHang(id,ct_donHangDTO);
+    public ResponseEntity<?> addCT_DonHang(@RequestBody CT_DonHangDTO ct_donHangDTO) throws JsonProcessingException {
+        return ResponseEntity.ok().body(null);
     }
     @PutMapping("orders/{orderId}/order/detail_order/{id}")
     public ResponseEntity<?> updateCT_DonHang(@PathVariable("orderId") Integer orderId,@PathVariable("id") Integer id, @RequestBody CT_DonHangDTO ct_donHangDTO){

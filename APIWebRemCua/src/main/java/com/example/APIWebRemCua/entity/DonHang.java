@@ -33,7 +33,7 @@ public class DonHang {
     @JoinColumn(name = "IDHINHTHUCTHANHTOAN")
     private  HinhThucThanhToan hinhThucThanhToan;
 
-    @OneToMany(mappedBy = "donHang")
+    @OneToMany(mappedBy = "donHang",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CT_DonHang> ct_donHangList;
     private Date ngaytao;
 

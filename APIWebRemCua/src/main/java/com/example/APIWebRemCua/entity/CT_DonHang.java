@@ -14,9 +14,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CT_DonHang {
     @Id
+    private int id;
+
     private int idrem;
 
-    @ManyToOne
+
+
+    @ManyToOne()
     @JoinColumn(name = "iddonhang")
     private DonHang donHang;
 

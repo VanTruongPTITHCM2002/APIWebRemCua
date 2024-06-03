@@ -65,11 +65,8 @@ public class DonHangServiceImpl implements DonHangService {
         donhang.setHinhThucThanhToan(new HinhThucThanhToan(donHangDTO.getHinhThucThanhToan(),payment_class.getTitle(donHangDTO.getHinhThucThanhToan())));
         List<CT_DonHang> ct_donHangList = new ArrayList<>();
         donhang.setCt_donHangList(null);
-        donhang =  donHangRepository.save(donhang);
-        for(CT_DonHangDTO ct_donHangDTO: donHangDTO.getCt_donHangList()){
-          ct_donHangService.insertCT_DonHang(donhang.getId(),ct_donHangDTO);
-        }
-
+        donHangRepository.save(donhang);
+        ct_donHangService.insertCT_DonHang(donhang,donHangDTO.getCt_donHangList());
         donHangDTO.setId(donhang.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponeObj(HttpStatus.CREATED.value(), "Thêm thành công đơn hàng",donHangDTO));
     }

@@ -45,42 +45,46 @@ public class CT_DonHangServiceImpl implements CT_DonHangService {
     }
 
     @Override
-    public ResponseEntity<?> insertCT_DonHang(int id,CT_DonHangDTO ct_donHangDTO) {
-        DonHang donHang = donHangRepository.findById(id).orElse(null);
+    public ResponseEntity<?> insertCT_DonHang(DonHang donHang,List<CT_DonHangDTO> listct_donHangDTO) {
+
         if(donHang.getTrangThai().getId() == 2){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponeObj(HttpStatus.NOT_FOUND.value(), "Đơn hàng không tồn tại hoặc đã bị xóa. Không thể thêm chi tiết đơn hàng",""));
         }
         if(donHang.getTrangThai().getId() == 0 || donHang.getTrangThai().getId() == 1){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponeObj(HttpStatus.BAD_REQUEST.value(),"Không thể thêm chi tiết đơn hàng trong đơn hàng này","" ));
         }
-        String flaskUrl = "http://127.0.0.1:7777/product_get_id_1/" + ct_donHangDTO.getIdrem();
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Object> responseEntity = restTemplate.getForEntity(flaskUrl, Object.class);
-        if(responseEntity.getBody().toString().contains("error")){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponeObj(HttpStatus.NOT_FOUND.value(),"Không tìm thấy id này trong mặt hàng","" ));
-        }
-        CT_DonHang ct_donHang = new CT_DonHang();
-        ct_donHang.setIdrem(ct_donHangDTO.getIdrem());
-        ct_donHang.setDonHang(donHang);//donHangService.getDonHangById(id));
-        ct_donHang.setGia(ct_donHangDTO.getGia());
-        ct_donHang.setSoluong(ct_donHangDTO.getSoluong());
-        ct_donHangRepository.save(ct_donHang);
-        donHang.setThanhtien(donHang.getThanhtien() + (ct_donHang.getGia() * ct_donHang.getSoluong()));
-        donHangRepository.save(donHang);
-        flaskUrl = "http://127.0.0.1:7777/product_update_sl";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        // Tạo một Map để đại diện cho dữ liệu cần gửi
-        Map<String, Object> requestData = new LinkedHashMap<>();
-        requestData.put("id", ct_donHangDTO.getIdrem());
-        requestData.put("method","subtract");
-        requestData.put("sl", ct_donHangDTO.getSoluong());
 
-        // Gửi yêu cầu PUT với dữ liệu là một Map
-        HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(requestData, headers);
-        restTemplate.put(flaskUrl,httpEntity,String.class);
-        ct_donHangDTO.setIddonhang(id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponeObj(HttpStatus.CREATED.value(), "Thêm chi tiết thành công",ct_donHangDTO));
+
+        for(CT_DonHangDTO ctDonHangDTO : listct_donHangDTO) {
+            String flaskUrl = "http://127.0.0.1:7777/product_get_id_1/" + ctDonHangDTO.getIdrem();
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Object> responseEntity = restTemplate.getForEntity(flaskUrl, Object.class);
+            if(responseEntity.getBody().toString().contains("error")){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponeObj(HttpStatus.NOT_FOUND.value(),"Không tìm thấy id này trong mặt hàng","" ));
+            }
+            CT_DonHang ct_donHang = new CT_DonHang();
+            ct_donHang.setIdrem(ctDonHangDTO.getIdrem());
+            ct_donHang.setDonHang(donHang);
+            ct_donHang.setGia(ctDonHangDTO.getGia());
+            ct_donHang.setSoluong(ctDonHangDTO.getSoluong());
+            ct_donHangRepository.save(ct_donHang);
+            donHang.setThanhtien(donHang.getThanhtien() + (ct_donHang.getGia() * ct_donHang.getSoluong()));
+            flaskUrl = "http://127.0.0.1:7777/product_update_sl";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            // Tạo một Map để đại diện cho dữ liệu cần gửi
+            Map<String, Object> requestData = new LinkedHashMap<>();
+            requestData.put("id", ctDonHangDTO.getIdrem());
+            requestData.put("method", "subtract");
+            requestData.put("sl", ctDonHangDTO.getSoluong());
+
+            // Gửi yêu cầu PUT với dữ liệu là một Map
+            HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(requestData, headers);
+            restTemplate.put(flaskUrl, httpEntity, String.class);
+            ctDonHangDTO.setIddonhang(donHang.getId());
+        }
+        donHangRepository.save(donHang);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponeObj(HttpStatus.CREATED.value(), "Thêm chi tiết thành công",null));
 
     }
 
