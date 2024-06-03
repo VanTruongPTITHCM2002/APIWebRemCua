@@ -2,11 +2,9 @@ package com.example.APIWebRemCua.service.impl;
 
 import com.example.APIWebRemCua.Enum.Payment_Class;
 import com.example.APIWebRemCua.Enum.Status_Class;
+import com.example.APIWebRemCua.dto.CT_DonHangDTO;
 import com.example.APIWebRemCua.dto.DonHangDTO;
-import com.example.APIWebRemCua.entity.DonHang;
-import com.example.APIWebRemCua.entity.HinhThucThanhToan;
-import com.example.APIWebRemCua.entity.ResponeObj;
-import com.example.APIWebRemCua.entity.TrangThai;
+import com.example.APIWebRemCua.entity.*;
 import com.example.APIWebRemCua.repository.DonHangRepository;
 import com.example.APIWebRemCua.service.DonHangService;
 import com.example.APIWebRemCua.utils.ConvertDonHang;
@@ -47,7 +45,7 @@ public class DonHangServiceImpl implements DonHangService {
     }
 
     @Override
-    public ResponseEntity<?> addDonHang(DonHangDTO donHangDTO) {
+    public ResponseEntity<?> addDonHang(DonHangDTO donHangDTO, List<CT_DonHangDTO>ct_donHangDTOList) {
         DonHang donhang = modelMapper.map(donHangDTO,DonHang.class);
         Status_Class status_class = Status_Class.ORDERING;
         Payment_Class payment_class = Payment_Class.BANKING;
@@ -62,7 +60,16 @@ public class DonHangServiceImpl implements DonHangService {
         }
         donhang.setTrangThai(new TrangThai(donHangDTO.getTrangThai(),status_class.getTitle(donHangDTO.getTrangThai())));
         donhang.setHinhThucThanhToan(new HinhThucThanhToan(donHangDTO.getHinhThucThanhToan(),payment_class.getTitle(donHangDTO.getHinhThucThanhToan())));
-        donhang.setCt_donHangList(null);
+        List<CT_DonHang> ct_donHangList = new ArrayList<>();
+        for(CT_DonHangDTO ct_donHangDTO: ct_donHangDTOList){
+            CT_DonHang  ct_donHang = new CT_DonHang();
+            ct_donHang.setDonHang(donhang);
+            ct_donHang.setIdrem(donhang.getId());
+            ct_donHang.setGia(ct_donHangDTO.getGia());
+            ct_donHang.setSoluong(ct_donHangDTO.getSoluong());
+            ct_donHangList.add(ct_donHang);
+        }
+        donhang.setCt_donHangList(ct_donHangList);
         donhang =  donHangRepository.save(donhang);
         donHangDTO.setId(donhang.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponeObj(HttpStatus.CREATED.value(), "Thêm thành công đơn hàng",donHangDTO));

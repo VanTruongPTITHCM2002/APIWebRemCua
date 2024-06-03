@@ -1,5 +1,6 @@
 package com.example.APIWebRemCua.controller;
 
+import com.example.APIWebRemCua.dto.CT_DonHangDTO;
 import com.example.APIWebRemCua.dto.DonHangDTO;
 
 import com.example.APIWebRemCua.service.DonHangService;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -32,8 +35,8 @@ public class DonHangController {
     }
 
     @PostMapping("orders")
-    public ResponseEntity<?> addDonHang(@RequestBody DonHangDTO donHangDTO){
-       return donHangService.addDonHang(donHangDTO);
+    public ResponseEntity<?> addDonHang(@RequestBody DonHangDTO donHangDTO, List<CT_DonHangDTO> ct_donHangDTOList){
+       return donHangService.addDonHang(donHangDTO,ct_donHangDTOList);
     }
     @PutMapping("orders/{id}")
     public ResponseEntity<?> updateDonHang(@PathVariable("id") int id, @RequestBody DonHangDTO donHangDTO){
