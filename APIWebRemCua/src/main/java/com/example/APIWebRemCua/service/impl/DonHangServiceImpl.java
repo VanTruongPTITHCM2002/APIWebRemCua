@@ -7,6 +7,7 @@ import com.example.APIWebRemCua.dto.DonHangDTO;
 import com.example.APIWebRemCua.entity.*;
 import com.example.APIWebRemCua.repository.CT_DonHangRepository;
 import com.example.APIWebRemCua.repository.DonHangRepository;
+import com.example.APIWebRemCua.service.CT_DonHangService;
 import com.example.APIWebRemCua.service.DonHangService;
 import com.example.APIWebRemCua.utils.ConvertDonHang;
 import org.modelmapper.ModelMapper;
@@ -32,6 +33,8 @@ public class DonHangServiceImpl implements DonHangService {
     CT_DonHangRepository ct_donHangRepository;
     @Autowired
     ModelMapper modelMapper;
+    @Autowired
+    CT_DonHangService ct_donHangService;
 
     @Autowired
     ConvertDonHang convertDonHang;
@@ -64,16 +67,9 @@ public class DonHangServiceImpl implements DonHangService {
         donhang.setCt_donHangList(null);
         donhang =  donHangRepository.save(donhang);
         for(CT_DonHangDTO ct_donHangDTO: donHangDTO.getCt_donHangList()){
-            CT_DonHang  ct_donHang = new CT_DonHang();
-            ct_donHang.setDonHang(donhang);
-            ct_donHang.setIdrem(ct_donHangDTO.getIdrem());
-            ct_donHang.setGia(ct_donHangDTO.getGia());
-            ct_donHang.setSoluong(ct_donHangDTO.getSoluong());
-            ct_donHangRepository.save(ct_donHang);
-            ct_donHangList.add(ct_donHang);
+          ct_donHangService.insertCT_DonHang(donhang.getId(),ct_donHangDTO);
         }
-        donhang.setCt_donHangList(ct_donHangList);
-        donHangRepository.save(donhang);
+
         donHangDTO.setId(donhang.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponeObj(HttpStatus.CREATED.value(), "Thêm thành công đơn hàng",donHangDTO));
     }
