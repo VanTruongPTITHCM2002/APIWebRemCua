@@ -37,11 +37,12 @@ public class DonHangController {
        return donHangService.addDonHang(donHangDTO);
     }
     @PutMapping("orders/{id}")
-    public ResponseEntity<?> updateDonHang(@PathVariable("id") int id, @RequestBody DonHangDTO donHangDTO){
-        return donHangService.updateDonHang(id,donHangDTO);
+    public ResponseEntity<?> updateDonHang(@PathVariable("id") int id, @RequestBody int status){
+        return donHangService.updateDonHangStatus(id,status);
     }
     @DeleteMapping("orders/{id}")
     public ResponseEntity<?> deleteDonHang(@PathVariable("id") int id){
         return donHangService.deleteDonHangById(id);
     }
+
 }

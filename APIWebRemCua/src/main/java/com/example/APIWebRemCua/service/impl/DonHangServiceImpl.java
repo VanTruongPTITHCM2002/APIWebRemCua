@@ -150,5 +150,15 @@ public class DonHangServiceImpl implements DonHangService {
         donHangRepository.save(dh);
         return ResponseEntity.ok().body(new ResponeObj(HttpStatus.OK.value(),"Đã xóa thành công",""));
         }
+
+    @Override
+    public ResponseEntity<?> updateDonHangStatus(int orderId, int status) {
+        Status_Class status_class = Status_Class.ORDERING;
+        DonHang dh = donHangRepository.findById(orderId).orElse(null);
+        dh.setTrangThai(new TrangThai(status,status_class.getTitle(orderId)));
+        donHangRepository.save(dh);
+        return ResponseEntity.ok().body(new ResponeObj(HttpStatus.OK.value(), "Cập nhật thành công trạng thái đơn hàng",""));
+
+    }
 }
 

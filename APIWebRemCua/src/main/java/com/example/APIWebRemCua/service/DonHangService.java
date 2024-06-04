@@ -14,4 +14,6 @@ public interface DonHangService {
 
     ResponseEntity<?> updateDonHang(int id,DonHangDTO donHangDTO);
     ResponseEntity<?> deleteDonHangById(int id);
+
+    ResponseEntity<?> updateDonHangStatus(int orderId,int status);
 }
