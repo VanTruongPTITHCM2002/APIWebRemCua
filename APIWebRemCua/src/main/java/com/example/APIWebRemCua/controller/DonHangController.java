@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api")
@@ -37,7 +39,8 @@ public class DonHangController {
        return donHangService.addDonHang(donHangDTO);
     }
     @PutMapping("orders/{id}")
-    public ResponseEntity<?> updateDonHang(@PathVariable("id") int id, @RequestBody int status){
+    public ResponseEntity<?> updateDonHang(@PathVariable("id") int id, @RequestBody Map<String, Integer> request){
+        int status = request.get("status");
         return donHangService.updateDonHangStatus(id,status);
     }
     @DeleteMapping("orders/{id}")
@@ -45,4 +48,8 @@ public class DonHangController {
         return donHangService.deleteDonHangById(id);
     }
 
+    @GetMapping("orders/report/{year}")
+    public ResponseEntity<?> getDonHangReport(@PathVariable("year") int year){
+        return donHangService.getSum(year);
+    }
 }

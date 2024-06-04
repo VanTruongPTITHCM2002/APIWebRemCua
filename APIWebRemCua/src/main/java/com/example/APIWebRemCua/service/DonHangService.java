@@ -16,4 +16,5 @@ public interface DonHangService {
     ResponseEntity<?> deleteDonHangById(int id);
 
     ResponseEntity<?> updateDonHangStatus(int orderId,int status);
+    ResponseEntity<?> getSum(int yearTien);
 }

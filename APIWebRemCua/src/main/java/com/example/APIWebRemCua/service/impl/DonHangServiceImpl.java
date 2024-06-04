@@ -17,10 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -159,6 +156,16 @@ public class DonHangServiceImpl implements DonHangService {
         donHangRepository.save(dh);
         return ResponseEntity.ok().body(new ResponeObj(HttpStatus.OK.value(), "Cập nhật thành công trạng thái đơn hàng",""));
 
+    }
+
+    @Override
+    public ResponseEntity<?> getSum(int year) {
+        List<Object[]> map = donHangRepository.getSum(year);
+        Map<Integer, Integer> revenueMap = new HashMap<>();
+        for (Object[] result : map) {
+            revenueMap.put((Integer) result[0], ((Number) result[1]).intValue());
+        }
+        return ResponseEntity.ok().body(new ResponeObj(HttpStatus.OK.value(), "Tổng doanh thu",revenueMap));
     }
 }
 
