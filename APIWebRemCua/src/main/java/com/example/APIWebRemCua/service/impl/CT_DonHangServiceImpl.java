@@ -8,6 +8,7 @@ import com.example.APIWebRemCua.repository.CT_DonHangRepository;
 import com.example.APIWebRemCua.repository.DonHangRepository;
 import com.example.APIWebRemCua.service.CT_DonHangService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -25,6 +26,7 @@ public class CT_DonHangServiceImpl implements CT_DonHangService {
 
     @Autowired
     DonHangRepository donHangRepository;
+
     @Override
     public ResponseEntity<?> getCT_DonHang(int id) {
         DonHang dh = donHangRepository.findById(id).orElse(null);
@@ -56,7 +58,7 @@ public class CT_DonHangServiceImpl implements CT_DonHangService {
 
 
         for(CT_DonHangDTO ctDonHangDTO : listct_donHangDTO) {
-            String flaskUrl = "http://127.0.0.1:7777/product_get_id_1/" + ctDonHangDTO.getIdrem();
+            String flaskUrl = "http://server_product:7777/product_get_id_1/" + ctDonHangDTO.getIdrem();
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<Object> responseEntity = restTemplate.getForEntity(flaskUrl, Object.class);
             if(responseEntity.getBody().toString().contains("error")){
@@ -69,7 +71,7 @@ public class CT_DonHangServiceImpl implements CT_DonHangService {
             ct_donHang.setSoluong(ctDonHangDTO.getSoluong());
             ct_donHangRepository.save(ct_donHang);
             donHang.setThanhtien(donHang.getThanhtien() + (ct_donHang.getGia() * ct_donHang.getSoluong()));
-            flaskUrl = "http://127.0.0.1:7777/product_update_sl";
+            flaskUrl = "http://server_product:7777/product_update_sl";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             // Tạo một Map để đại diện cho dữ liệu cần gửi
@@ -98,7 +100,7 @@ public class CT_DonHangServiceImpl implements CT_DonHangService {
             if(ct_donHang.getIdrem() == id){
                 donHang.setThanhtien(donHang.getThanhtien() - (ct_donHang.getSoluong() * ct_donHang.getGia()));
                 RestTemplate restTemplate = new RestTemplate();
-                String flaskUrl = "http://127.0.0.1:7777/product_update_sl";
+                String flaskUrl = "http://server_product:7777/product_update_sl";
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
                 // Tạo một Map để đại diện cho dữ liệu cần gửi

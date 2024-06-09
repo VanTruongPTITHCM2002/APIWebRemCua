@@ -14,6 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CT_DonHang {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private int idrem;
